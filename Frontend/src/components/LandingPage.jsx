@@ -28,7 +28,7 @@ const LandingPage = () => {
             <div className="lp-brand-icon">
               <Vote size={20} />
             </div>
-            <span className="lp-brand-name">VoteChain</span>
+            <span className="lp-brand-name">Samashti</span>
           </div>
 
           {/* Desktop links */}
@@ -133,7 +133,7 @@ const LandingPage = () => {
       <section id="features" className="lp-features">
         <div className="lp-section-inner">
           <div className="lp-section-header">
-            <div className="lp-section-tag">Why VoteChain</div>
+            <div className="lp-section-tag">Why Samashti</div>
             <h2 className="lp-section-title">Built for trust, designed for everyone</h2>
             <p className="lp-section-subtitle">
               We've re-imagined the democratic process from the ground up —
@@ -242,7 +242,7 @@ const LandingPage = () => {
           </h2>
           <p className="lp-cta-subtitle">
             Join thousands of users who have already upgraded their democratic
-            infrastructure with VoteChain.
+            infrastructure with Samashti.
           </p>
           <button className="lp-cta-btn" onClick={() => navigate('/register')}>
             <Zap size={18} />
@@ -261,7 +261,7 @@ const LandingPage = () => {
               <div className="lp-brand-icon" style={{ width: 32, height: 32 }}>
                 <Vote size={16} />
               </div>
-              <span className="lp-footer-brand-name">VoteChain</span>
+              <span className="lp-footer-brand-name">Samashti</span>
             </div>
             <p className="lp-footer-desc">
               Next-generation voting platform ensuring security, transparency,
@@ -291,7 +291,7 @@ const LandingPage = () => {
         </div>
 
         <div className="lp-footer-bottom">
-          <span>© {new Date().getFullYear()} VoteChain. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Samashti. All rights reserved.</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             Made with <Lock size={12} /> for secure elections
           </span>

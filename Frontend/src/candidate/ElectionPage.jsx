@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { LogOut, Info, CheckCircle, AlertCircle } from "lucide-react";
+import toast from "react-hot-toast";
+import { LogOut, Info, CheckCircle, AlertCircle, ChevronRight } from "lucide-react";
+import { FaUsers, FaUserGraduate, FaIdCard, FaUserTie } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getElections } from "../api/electionService";
 import { castVote, getMyVotes } from "../api/voteService";
+import "./voter.css";
 
 export default function ElectionPage() {
+  const { user, token, logout } = useAuth();
   const [activeElection, setActiveElection] = useState(null);
   const [allRegisteredElections, setAllRegisteredElections] = useState([]);
   const [myVotes, setMyVotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState(user?.year === "1st Year" ? "CR" : "Secretary");
 
-  const { user, token, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -26,7 +30,6 @@ export default function ElectionPage() {
       const allElections = await getElections(token);
       const votes = await getMyVotes(token);
 
-      // Elections are now general containers. Everyone can see all active/upcoming elections.
       const userElections = allElections;
       setAllRegisteredElections(userElections);
 
@@ -53,31 +56,29 @@ export default function ElectionPage() {
 
     try {
       await castVote(activeElection._id, candidate._id, token);
-      alert("Vote cast successfully!");
+      toast.success("Vote cast successfully!");
       fetchData(); // Refresh UI
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   };
 
   const firstName = user?.name?.split(" ")[0] || "Voter";
 
-  // Organize candidates by role
   let candidatesByRole = {};
   if (activeElection && activeElection.candidates) {
-    // 🎯 Filter visible candidates
     const visibleCandidates = activeElection.candidates.filter(c => {
       const role = c.role || "CR";
-      if (role !== "CR") return true; // General roles visible to all
+      const matchesTab = role === activeTab;
+      if (!matchesTab) return false;
 
-      // CR roles visible only to matching class
+      if (role !== "CR") return true; 
+
       const yearMatch = c.targetYear === "All" || c.targetYear === user?.year;
       const deptMatch = c.targetDepartment === "All" || c.targetDepartment === user?.department;
-      const sectMatch = c.targetSection === "All" || c.targetSection === user?.section;
-      return yearMatch && deptMatch && sectMatch;
+      return yearMatch && deptMatch;
     });
 
-    // Group by role
     visibleCandidates.forEach(c => {
       const role = c.role || "CR";
       if (!candidatesByRole[role]) candidatesByRole[role] = [];
@@ -85,10 +86,11 @@ export default function ElectionPage() {
     });
   }
 
-  // Voting Eligibility Helpers
+  const allRoles = ["Secretary", "Joint Secretary", "Additional Joint Secretary", "CR"];
+
   const isEligibleForRole = (role) => {
-    if (role === "CR") return true; // Everyone can vote for their CR
-    return user?.year !== "1st Year"; // 1st years cannot vote for Gen Sec, etc.
+    if (role === "CR") return true; 
+    return user?.year !== "1st Year"; 
   };
 
   const hasVotedForRole = (role) => {
@@ -102,172 +104,239 @@ export default function ElectionPage() {
   };
 
   const roles = Object.keys(candidatesByRole);
-  const showObservationWarning = user?.year === "1st Year" && roles.some(r => r !== "CR");
+  const showObservationWarning = user?.year === "1st Year" && activeTab !== "CR";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="bg-blue-600 text-white p-2 rounded-xl shadow-lg border-2 border-blue-400 font-bold tracking-wider">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+      <header className="px-4 md:px-8 py-4 md:py-5 flex justify-between items-center glass-panel sticky top-0 z-[100] border-b border-gray-200/50">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="bg-indigo-600 text-white w-9 h-9 md:w-10 md:h-10 rounded-xl md:rounded-2xl shadow-lg shadow-indigo-600/30 flex items-center justify-center font-black text-base md:text-lg tracking-tighter">
             VC
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-600 font-extrabold text-transparent bg-clip-text">VoteCentral</h1>
+          <div>
+            <h1 className="text-lg md:text-xl font-black text-slate-900 tracking-tighter">Samashti</h1>
+            <p className="hidden md:block text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">Institutional Voting Core</p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="text-right">
-            <p className="font-semibold text-gray-800">{user?.name}</p>
-            <p className="text-xs font-medium text-blue-600 capitalize bg-blue-100 px-2 py-0.5 rounded shadow-sm inline-block mt-1">
-              {user?.role} {user?.role === 'voter' && (user?.isVerified ? " (Verified)" : " (Unverified)")}
+        <div className="flex items-center gap-4 md:gap-8">
+          <div className="hidden sm:flex flex-col items-end">
+            <p className="font-extrabold text-slate-800 text-sm leading-none">{user?.name}</p>
+            <p className="text-[10px] font-black text-indigo-500 tracking-wider uppercase mt-1.5 flex items-center gap-2">
+               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+               {user?.role} • {user?.year}
             </p>
           </div>
 
-          <button onClick={handleLogout} className="flex items-center gap-2 border-2 border-gray-200 px-4 py-2 rounded-xl text-gray-600 font-semibold hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition">
-            <LogOut size={18} /> Logout
+          <button onClick={handleLogout} className="flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-slate-600 font-extrabold text-[10px] md:text-xs uppercase tracking-widest bg-slate-50 border border-slate-200/60 hover:bg-red-50 hover:text-red-500 transition-all active:scale-95">
+            <LogOut size={14} /> <span className="hidden xs:inline">Exit</span>
           </button>
         </div>
       </header>
 
-      <main className="flex-1 px-10 py-10 max-w-7xl mx-auto w-full">
+      <main className="flex-1 px-4 md:px-8 py-8 md:py-12 max-w-7xl mx-auto w-full animate-fade-in">
         {loading ? (
-          <p className="text-center text-gray-500 font-medium">Loading election data...</p>
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+             <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
+             <p className="text-slate-400 font-bold text-sm tracking-widest uppercase">Loading Mandates</p>
+          </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-6 rounded-xl border-2 border-red-200 font-semibold flex items-center gap-3">
-            <AlertCircle /> {error}
+          <div className="bg-red-50 text-red-600 p-6 md:p-8 rounded-3xl border border-red-100 font-bold flex flex-col items-center gap-4 max-w-lg mx-auto animate-scale-in">
+            <AlertCircle size={40} className="opacity-50" />
+            <p className="text-center">{error}</p>
           </div>
         ) : !activeElection ? (
-          <div className="bg-white p-12 text-center rounded-3xl shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-700 mb-2">No active elections</h2>
-            <p className="text-gray-500">There are currently no elections available.</p>
+          <div className="bg-white p-12 md:p-20 text-center rounded-[2.5rem] md:rounded-[3rem] shadow-sm border border-slate-100 animate-scale-in">
+            <FaUsers size={60} className="mx-auto text-slate-100 mb-6" />
+            <h2 className="text-xl md:text-2xl font-black text-slate-800 mb-2">No active elections</h2>
+            <p className="text-slate-400 font-medium max-w-xs mx-auto text-sm md:text-base">There are currently no elections available for participation in your sector.</p>
           </div>
         ) : (
           <>
-            <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div>
-                <h2 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">{activeElection.title}</h2>
-                <p className="text-lg text-gray-600 max-w-3xl">
-                  Welcome, <span className="font-semibold text-blue-600">{firstName}</span>. {activeElection.description}
+            <div className="mb-8 md:mb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-slate-100 pb-8 md:pb-12">
+              <div className="animate-slide-up">
+                 <div className="flex flex-wrap items-center gap-3 mb-3">
+                    <span className="px-3 py-1 bg-indigo-50 text-indigo-500 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-full border border-indigo-100/50">Mandate Container</span>
+                    <span className="hidden xs:block w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+                    <span className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Election ID: {activeElection._id.slice(-8)}</span>
+                 </div>
+                <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tighter leading-tight">{activeElection.title}</h2>
+                <p className="text-slate-500 font-medium max-w-2xl text-base md:text-lg leading-relaxed">
+                   Welcome to the digital ballot, <span className="text-indigo-600 font-black">{firstName}</span>. {activeElection.description}
                 </p>
               </div>
 
               {allRegisteredElections.length > 1 && (
-                <div className="flex flex-col gap-2 min-w-[250px]">
-                  <label htmlFor="election-select" className="text-sm font-bold text-gray-500 uppercase tracking-widest">
-                    Switch Election
+                <div className="flex flex-col gap-3 w-full lg:min-w-[320px] lg:w-auto animate-slide-up">
+                  <label htmlFor="election-select" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                    Environment Selector
                   </label>
-                  <select
-                    id="election-select"
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition font-semibold text-gray-700 shadow-sm cursor-pointer"
-                    value={activeElection._id}
-                    onChange={(e) => setActiveElection(allRegisteredElections.find(el => el._id === e.target.value))}
-                  >
-                    {allRegisteredElections.map(el => (
-                      <option key={el._id} value={el._id}>
-                        {el.title} {el.status === "active" ? "(Active)" : ""}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative group">
+                    <select
+                      id="election-select"
+                      className="w-full appearance-none px-5 md:px-6 py-3 md:py-4 bg-white border-2 border-slate-100/80 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 outline-none transition-all font-extrabold text-slate-700 shadow-sm cursor-pointer pr-12 text-sm md:text-base"
+                      value={activeElection._id}
+                      onChange={(e) => setActiveElection(allRegisteredElections.find(el => el._id === e.target.value))}
+                    >
+                      {allRegisteredElections.map(el => (
+                        <option key={el._id} value={el._id}>
+                          {el.title} {el.status === "active" ? "(LOCKED IN)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
+                       <ChevronRight size={20} className="rotate-90" />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {user?.role === 'voter' && !user?.isVerified && (
-              <div className="flex justify-between items-center bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-xl shadow-sm mb-8">
-                <div className="flex items-start gap-4 text-yellow-800">
-                  <AlertCircle size={28} className="text-yellow-600" />
+            {/* Observation / Warning Info */}
+            <div className="space-y-4 md:space-y-6 mb-8 md:mb-12 animate-slide-up">
+              {user?.role === 'voter' && !user?.isVerified && (
+                <div className="soft-info-banner border-yellow-200 bg-yellow-50/50 text-yellow-800">
+                  <FaIdCard className="soft-info-icon text-yellow-600 mt-1" size={24} />
                   <div>
-                    <h3 className="font-bold text-lg mb-1">Account Pending Verification</h3>
-                    <p>Your ID card is currently being reviewed by an administrator. You cannot cast a vote until you are verified.</p>
+                    <h3 className="font-extrabold text-[11px] md:text-sm uppercase tracking-wide mb-1">Authorization Pending</h3>
+                    <p className="text-[13px] md:text-sm font-medium opacity-80 leading-relaxed">Your digital credentials are currently being encrypted and validated by the primary administration. Voting functions remain locked until verification is finalized.</p>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {showObservationWarning && activeElection?.status === "active" && (
-              <div className="flex justify-between items-center bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-xl shadow-sm mb-8">
-                <div className="flex items-start gap-4 text-blue-800">
-                  <Info size={28} className="text-blue-600" />
+              {showObservationWarning && activeElection?.status === "active" && (
+                <div className="soft-info-banner border-indigo-100 bg-indigo-50/50">
+                  <FaUserGraduate className="soft-info-icon mt-1" size={24} />
                   <div>
-                    <h3 className="font-bold text-lg mb-1">Observation Mode (General Roles)</h3>
-                    <p>As a 1st-year student, you can only vote for Class Representatives (CR). Other main roles are visible for observation purposes only.</p>
+                    <h3 className="font-extrabold text-[11px] md:text-sm uppercase tracking-wide mb-1">Observation Protocol Active</h3>
+                    <p className="text-[13px] md:text-sm font-medium opacity-80 leading-relaxed">As a primary stage student, your voting power is exclusively allocated to Class Representatives (CR). Executive roles are visible for observation purposes only to ensure systemic integrity.</p>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {activeElection.status !== "active" && (
-              <div className="flex justify-between items-center bg-blue-50 border border-blue-200 text-blue-800 p-5 rounded-xl mb-8 shadow-sm">
-                <div className="flex items-center gap-3"><Info size={24} /> <span className="font-semibold text-lg">Voting is closed. Status: {activeElection.status}</span></div>
-              </div>
-            )}
+              {activeElection.status !== "active" && (
+                <div className="soft-info-banner border-slate-200 bg-slate-100/50 text-slate-600">
+                  <Info className="soft-info-icon text-slate-400 mt-1" size={24} />
+                  <div>
+                    <h3 className="font-extrabold text-[11px] md:text-sm uppercase tracking-wide mb-1">System Locked</h3>
+                    <p className="text-[13px] md:text-sm font-medium opacity-80 leading-relaxed">The digital ballot box for this mandate is currently closed. Current Status: <span className="font-black text-slate-900 uppercase">{activeElection.status}</span></p>
+                  </div>
+                </div>
+              )}
+            </div>
 
-            {roles.length === 0 ? (
-              <div className="py-12 text-center text-gray-500 border-2 border-dashed rounded-3xl">
-                <p className="text-xl font-medium">No candidates registered for your eligible roles in this election yet.</p>
-              </div>
-            ) : (
-              roles.map(role => (
-                <div key={role} className="mb-12">
-                  <div className="flex items-center gap-4 mb-6 border-b pb-3">
-                    <h3 className="text-2xl font-black text-gray-800 uppercase tracking-widest">{role}</h3>
-                    {hasVotedForRole(role) && (
-                       <span className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-green-300 shadow-sm"><CheckCircle size={14}/> VOTED</span>
-                    )}
-                    {!isEligibleForRole(role) && (
-                       <span className="bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm"><Info size={14}/> VIEW ONLY</span>
-                    )}
+            {/* Tabbed Role Switcher */}
+            <div className="flex flex-col items-center mb-10 md:mb-16 animate-slide-up w-full">
+               <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Mandate Role Filter</span>
+               <div className="w-full flex justify-center no-scrollbar overflow-x-auto pb-2">
+                 <div className="voter-tabs-container glass-panel shadow-indigo-600/5 border-slate-100 w-fit">
+                  {allRoles.map(role => (
+                    <button
+                      key={role}
+                      onClick={() => setActiveTab(role)}
+                      className={`voter-tab-btn ${activeTab === role ? "active" : ""}`}
+                    >
+                      {role}
+                      {hasVotedForRole(role) && (
+                        <span className="ml-2 inline-flex w-4 h-4 bg-green-500 text-white text-[8px] rounded-full items-center justify-center shadow-lg shadow-green-500/30">✓</span>
+                      )}
+                    </button>
+                  ))}
+                 </div>
+               </div>
+            </div>
+
+            {/* Candidate List Display */}
+            <div className="roles-container animate-fade-in">
+              {!candidatesByRole[activeTab] || candidatesByRole[activeTab].length === 0 ? (
+                <div className="py-20 md:py-32 text-center bg-white border border-slate-100 rounded-[2.5rem] md:rounded-[3rem] shadow-sm animate-scale-in">
+                   <div className="w-16 h-16 md:w-24 md:h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8">
+                      <FaUserTie size={36} className="text-slate-200" />
+                   </div>
+                  <h3 className="text-lg md:text-xl font-black text-slate-300 tracking-tight uppercase">Vacancy Available</h3>
+                  <p className="text-slate-400 mt-2 font-bold text-[11px] md:text-sm uppercase tracking-widest">No valid candidates found for {activeTab}</p>
+                </div>
+              ) : (
+                <div className="animate-slide-up">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 md:gap-6 mb-8 md:mb-12">
+                    <div className="text-center sm:text-left">
+                        <div className="flex items-center justify-center sm:justify-start gap-3 mb-2">
+                           <div className="w-1.5 h-6 bg-indigo-600 rounded-full"></div>
+                           <span className="text-[11px] font-black text-indigo-500 uppercase tracking-[.25em]">Eligible Ballot</span>
+                        </div>
+                        <h3 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase">{activeTab}</h3>
+                    </div>
+                    
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-3 h-fit mb-1">
+                        {hasVotedForRole(activeTab) && (
+                           <span className="bg-green-50 text-green-700 text-[9px] md:text-[10px] font-black px-4 md:px-5 py-2 md:py-2.5 rounded-xl md:rounded-2xl flex items-center gap-2 border border-green-200/50 shadow-sm animate-bounce"><CheckCircle size={14}/> TRANSACTION CONFIRMED</span>
+                        )}
+                        {!isEligibleForRole(activeTab) && (
+                           <span className="bg-slate-100 text-slate-500 text-[9px] md:text-[10px] font-black px-4 md:px-5 py-2 md:py-2.5 rounded-xl md:rounded-2xl flex items-center gap-2 tracking-widest border border-slate-200/50 shadow-sm"><Info size={14}/> SYSTEM OBSERVER</span>
+                        )}
+                    </div>
                   </div>
                   
-                  <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
-                    {candidatesByRole[role].map(candidate => {
-                      const votedCandidateId = getVotedCandidateIdForRole(role);
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-10">
+                    {candidatesByRole[activeTab].map(candidate => {
+                      const votedCandidateId = getVotedCandidateIdForRole(activeTab);
                       const isSelected = votedCandidateId === candidate._id;
                       const hasVotedThisRole = !!votedCandidateId;
 
                       return (
-                        <div key={candidate._id} className={`bg-white rounded-3xl p-6 text-center border-2 transition-all duration-300 relative group overflow-hidden
-                            ${isSelected ? "border-green-500 shadow-xl bg-green-50/30 transform scale-105" : "border-gray-100 shadow hover:shadow-2xl hover:-translate-y-1 block"}`}>
+                        <div key={candidate._id} className={`glass-card group flex flex-row sm:flex-col items-center sm:items-stretch gap-4 sm:gap-0 p-4 sm:p-6 rounded-3xl sm:rounded-[2.5rem] relative ${isSelected ? "ring-2 ring-green-400/50 bg-green-50/30" : ""}`}>
                           
                           {isSelected && (
-                            <div className="bg-green-500 text-white text-xs font-bold px-4 py-1.5 rounded-full absolute top-4 left-4 shadow-md flex items-center gap-1">
-                              <CheckCircle size={14} /> YOUR VOTE
+                            <div className="voted-badge-float animate-pulse sm:top-12 sm:right-12 top-4 right-4">
+                              <CheckCircle size={16} />
                             </div>
                           )}
 
-                          <div className="relative inline-block mt-4 mb-4">
+                          <div className="relative w-20 h-20 sm:w-full sm:h-64 sm:mb-8 rounded-2xl sm:rounded-[2rem] overflow-hidden bg-slate-100 shadow-inner flex-shrink-0">
                             {candidate.photo ? (
-                              <img src={`http://localhost:5000${candidate.photo}`} alt={candidate.name} className="w-28 h-28 rounded-full border-4 border-white shadow-lg object-cover" />
+                              <img src={`http://localhost:5000${candidate.photo}`} alt={candidate.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 saturate-[0.8] group-hover:saturate-[1.1]" />
                             ) : (
-                              <div className="w-28 h-28 rounded-full bg-gray-200 border-4 border-white shadow-lg mx-auto"></div>
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-300">
+                                <FaUsers size={32} className="opacity-20 sm:w-14 sm:h-14" />
+                              </div>
                             )}
                           </div>
 
-                          <h4 className="font-black text-xl text-gray-800 mb-1">{candidate.name}</h4>
-                          <p className="text-gray-500 text-sm mb-8 leading-relaxed px-2 h-16 overflow-y-auto">
-                            {candidate.bio || "No biography provided."}
-                          </p>
+                          <div className="flex-1 text-left sm:text-center px-1 md:px-2 min-w-0">
+                             <h4 className="candidate-name-title text-base sm:text-xl mb-1 sm:mb-2 group-hover:text-indigo-600 transition-colors uppercase tracking-tight truncate sm:whitespace-normal">{candidate.name}</h4>
+                             
+                             <p className="bio-text text-[11px] sm:text-sm mb-3 sm:mb-8 font-medium italic sm:px-2">
+                                {candidate.bio || "No mission statement provided."}
+                             </p>
 
-                          {activeElection.status === "active" && user?.role === 'voter' && user?.isVerified && !hasVotedThisRole && isEligibleForRole(role) && (
-                            <button
-                              onClick={() => handleVote(candidate)}
-                              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-blue-600/30 border border-blue-700"
-                            >
-                              Vote for {candidate.name.split(" ")[0]}
-                            </button>
-                          )}
-
-                          {isSelected && (
-                            <div className="w-full bg-green-100 text-green-700 font-bold py-3.5 rounded-xl border border-green-200 flex justify-center items-center gap-2 shadow-inner mt-4">
-                              <CheckCircle size={20} /> Voted
-                            </div>
-                          )}
+                             <div className="pt-0 sm:pt-2">
+                                {activeElection.status === "active" && user?.role === 'voter' && user?.isVerified && !hasVotedThisRole && isEligibleForRole(activeTab) ? (
+                                  <button
+                                    onClick={() => handleVote(candidate)}
+                                    className="vote-cta-btn py-2 sm:py-4 text-[10px] sm:text-sm"
+                                  >
+                                    <span className="hidden sm:inline">Cast Ballot</span>
+                                    <span className="sm:hidden">Vote</span> 
+                                    <ChevronRight size={14} className="sm:size-18 translate-x-0 group-hover:translate-x-1 transition-transform" />
+                                  </button>
+                                ) : isSelected ? (
+                                  <div className="w-full bg-green-500 text-white font-black py-2 sm:py-4 rounded-xl sm:rounded-2xl flex justify-center items-center gap-2 sm:gap-3 shadow-lg shadow-green-500/20 text-[9px] sm:text-xs tracking-widest uppercase">
+                                    <CheckCircle size={14} className="sm:size-16" /> <span className="sm:inline hidden">Finalized</span><span className="sm:hidden">DONE</span>
+                                  </div>
+                                ) : (
+                                  <div className="w-full bg-slate-100 text-slate-400 font-black py-2 sm:py-4 rounded-xl sm:rounded-2xl text-center text-[8px] sm:text-[10px] tracking-[0.15em] sm:tracking-[0.2em] uppercase border border-slate-200/50">
+                                    {hasVotedThisRole ? "LOCKED" : !isEligibleForRole(activeTab) ? "VIEW" : "INFO"}
+                                  </div>
+                                )}
+                             </div>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 </div>
-              ))
-            )}
+              )}
+            </div>
           </>
         )}
       </main>

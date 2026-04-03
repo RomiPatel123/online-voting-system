@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 import { AuthProvider } from './context/AuthContext'
+import { Toaster } from 'react-hot-toast'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import VoterLogin from './auth/VoterLogin'
@@ -20,11 +21,13 @@ import AdminElections from '../admin/AdminElections'
 import AdminVoters from '../admin/AdminVoters'
 import AdminResults from '../admin/AdminResults'
 import AdminAddCandidate from '../admin/AdminAddCandidate'
+import AdminElectionCandidates from '../admin/AdminElectionCandidates'
 import LandingPage from './components/LandingPage'
 
 const App = () => {
   return (
     <AuthProvider>
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         {/* Default → Landing Page */}
         <Route path="/" element={<LandingPage />} />
@@ -103,6 +106,22 @@ const App = () => {
           element={
             // <ProtectedRoute allowedRoles={["admin"]}>
               <AdminAddCandidate />
+            // </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/elections/:electionId/edit-candidate/:candidateId"
+          element={
+            // <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminAddCandidate />
+            // </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/elections/:electionId/candidates"
+          element={
+            // <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminElectionCandidates />
             // </ProtectedRoute>
           }
         />

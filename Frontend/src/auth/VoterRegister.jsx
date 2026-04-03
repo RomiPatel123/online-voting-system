@@ -16,7 +16,6 @@ const VoterRegister = () => {
     phone: '',
     department: '',
     year: '',
-    section: '',
     election: ''
   });
   const [elections, setElections] = useState([]);
@@ -44,7 +43,11 @@ const VoterRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    if (!formData.election) {
+      setError("Please select an election to participate in.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const fd = new FormData();
@@ -134,16 +137,6 @@ const VoterRegister = () => {
               </div>
             </div>
 
-            <div className="auth-field" style={{ marginBottom: 16 }}>
-              <div className="auth-input-group">
-                <select name="section" value={formData.section} onChange={handleChange} className="auth-select" required style={{ paddingLeft: 16 }}>
-                  <option value="" disabled>Select Section</option>
-                  <option value="A">Section A</option>
-                  <option value="B">Section B</option>
-                  <option value="C">Section C</option>
-                </select>
-              </div>
-            </div>
 
             <div className="auth-field" style={{ marginBottom: 16 }}>
               <div className="auth-input-group">

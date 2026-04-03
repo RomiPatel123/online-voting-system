@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import AdminSidebar from './components/AdminSidebar';
 import { useAuth } from '../src/context/AuthContext';
 import { getVoters, verifyVoter, rejectVoter } from '../src/api/adminService';
@@ -26,13 +27,13 @@ const AdminVoters = () => {
     useEffect(() => { fetchVoters(); }, [token]);
 
     const handleVerify = async (id) => {
-        try { await verifyVoter(id, token); fetchVoters(); setSelectedVoter(null); }
-        catch (err) { alert(err.message); }
+        try { await verifyVoter(id, token); fetchVoters(); setSelectedVoter(null); toast.success("Voter verified"); }
+        catch (err) { toast.error(err.message); }
     };
 
     const handleReject = async (id) => {
-        try { await rejectVoter(id, token); fetchVoters(); setSelectedVoter(null); }
-        catch (err) { alert(err.message); }
+        try { await rejectVoter(id, token); fetchVoters(); setSelectedVoter(null); toast.success("Voter rejected"); }
+        catch (err) { toast.error(err.message); }
     };
 
     const pendingCount  = voters.filter(v => !v.isVerified).length;
@@ -84,7 +85,6 @@ const AdminVoters = () => {
                                     <th>Email</th>
                                     <th>Department</th>
                                     <th>Year</th>
-                                    <th>Section</th>
                                     <th>Registered Election</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -110,7 +110,6 @@ const AdminVoters = () => {
                                         <td style={{ color: '#64748b' }}>{voter.email}</td>
                                         <td style={{ color: '#64748b' }}>{voter.department || '—'}</td>
                                         <td style={{ color: '#64748b' }}>{voter.year || '—'}</td>
-                                        <td style={{ color: '#64748b' }}>{voter.section || '—'}</td>
                                         <td style={{ color: '#64748b' }}>
                                             {voter.registeredElections?.map(e => e.title).join(', ') || '—'}
                                         </td>
@@ -176,10 +175,6 @@ const AdminVoters = () => {
                                 <div>
                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Year</div>
                                     <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{selectedVoter.year || '—'}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Section</div>
-                                    <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{selectedVoter.section || '—'}</div>
                                 </div>
                             </div>
 

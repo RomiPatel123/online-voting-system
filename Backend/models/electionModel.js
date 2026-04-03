@@ -52,11 +52,6 @@ const electionSchema = new mongoose.Schema(
             type: String, // "BCA", "BBA", etc., or "All"
             default: "All",
         },
-
-        targetSection: {
-            type: String, // "A", "B", etc., or "All"
-            default: "All",
-        },
     },
     { timestamps: true }
 );

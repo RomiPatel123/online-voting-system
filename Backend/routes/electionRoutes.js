@@ -11,6 +11,7 @@ import {
     deleteElection,
     addCandidate,
     getCandidates,
+    getCandidateById,
     deleteCandidate,
     updateCandidate,
     updateElection,
@@ -49,6 +50,7 @@ router.post(
     upload.fields([{ name: "photo", maxCount: 1 }, { name: "partySymbol", maxCount: 1 }]),
     addCandidate
 );
+router.get("/candidates/:id", protect, adminOnly, getCandidateById);
 router.delete("/candidates/:id", protect, adminOnly, deleteCandidate);
 
 router.put(

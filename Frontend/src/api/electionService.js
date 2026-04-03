@@ -99,6 +99,13 @@ export const addCandidate = async (id, formData, token) => {
     return data;
 };
 
+export const getCandidateById = async (candidateId, token) => {
+    const res = await fetch(`${BASE_URL}/candidates/${candidateId}`, { headers: getHeaders(token) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to fetch candidate details");
+    return data;
+};
+
 export const deleteCandidate = async (candidateId, token) => {
     const res = await fetch(`${BASE_URL}/candidates/${candidateId}`, {
         method: "DELETE",

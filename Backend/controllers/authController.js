@@ -15,7 +15,11 @@ const generateToken = (id) => {
 // 📝 Register Voter (with ID Card upload)
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, phone, department, year, section, election } = req.body;
+    const { name, email, password, phone, department, year, election } = req.body;
+
+    if (!election || election === "" || election === "undefined") {
+      return res.status(400).json({ message: "Please select a valid election to participate in." });
+    }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -56,7 +60,6 @@ export const registerUser = async (req, res) => {
       phone,
       department,
       year,
-      section,
       registeredElections: [election],
       idCardFront,
       idCardBack,

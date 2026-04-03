@@ -23,7 +23,7 @@ export const getPublicElections = async (req, res) => {
 export const getElections = async (req, res) => {
     try {
         const elections = await Election.find()
-            .populate("candidates", "name photo voteCount")
+            .populate("candidates", "name email photo bio role targetYear targetDepartment voteCount")
             .sort({ createdAt: -1 });
         res.json(elections);
     } catch (err) {
@@ -36,7 +36,7 @@ export const getElectionById = async (req, res) => {
     try {
         const election = await Election.findById(req.params.id).populate(
             "candidates",
-            "name photo bio voteCount"
+            "name email photo bio role targetYear targetDepartment voteCount"
         );
         if (!election) return res.status(404).json({ message: "Election not found" });
         res.json(election);
@@ -48,7 +48,7 @@ export const getElectionById = async (req, res) => {
 /** POST /api/elections  (Admin only) */
 export const createElection = async (req, res) => {
     try {
-        const { title, description, startDate, endDate, type, targetYear, targetDepartment, targetSection } = req.body;
+        const { title, description, startDate, endDate, type, targetYear, targetDepartment } = req.body;
 
         const election = await Election.create({
             title,
@@ -58,7 +58,7 @@ export const createElection = async (req, res) => {
             type,
             targetYear,
             targetDepartment,
-            targetSection,
+            
         });
 
         res.status(201).json(election);
@@ -70,7 +70,7 @@ export const createElection = async (req, res) => {
 /** PUT /api/elections/:id (Admin only) */
 export const updateElection = async (req, res) => {
     try {
-        const { title, description, startDate, endDate, type, targetYear, targetDepartment, targetSection } = req.body;
+        const { title, description, startDate, endDate, type, targetYear, targetDepartment } = req.body;
         const election = await Election.findById(req.params.id);
 
         if (!election) return res.status(404).json({ message: "Election not found" });
@@ -82,7 +82,6 @@ export const updateElection = async (req, res) => {
         if (type) election.type = type;
         if (targetYear) election.targetYear = targetYear;
         if (targetDepartment) election.targetDepartment = targetDepartment;
-        if (targetSection) election.targetSection = targetSection;
 
         await election.save();
         res.json(election);
@@ -323,7 +322,7 @@ export const addCandidate = async (req, res) => {
         const election = await Election.findById(req.params.id);
         if (!election) return res.status(404).json({ message: "Election not found" });
 
-        const { name, email, password, bio, role, targetYear, targetDepartment, targetSection } = req.body;
+        const { name, email, password, bio, role, targetYear, targetDepartment } = req.body;
 
         // Hash password for candidate login
         const salt = await bcrypt.genSalt(10);
@@ -344,7 +343,7 @@ export const addCandidate = async (req, res) => {
             role,
             targetYear,
             targetDepartment,
-            targetSection,
+            
         });
 
         election.candidates.push(candidate._id);
@@ -448,6 +447,17 @@ export const getCandidates = async (req, res) => {
     }
 };
 
+/** GET /api/elections/candidates/:id */
+export const getCandidateById = async (req, res) => {
+    try {
+        const candidate = await Candidate.findById(req.params.id);
+        if (!candidate) return res.status(404).json({ message: "Candidate not found" });
+        res.json(candidate);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 /** DELETE /api/candidates/:id  (Admin only) */
 export const deleteCandidate = async (req, res) => {
     try {
@@ -471,7 +481,7 @@ export const updateCandidate = async (req, res) => {
         const candidate = await Candidate.findById(req.params.id);
         if (!candidate) return res.status(404).json({ message: "Candidate not found" });
 
-        const { name, email, password, bio, role, targetYear, targetDepartment, targetSection } = req.body;
+        const { name, email, password, bio, role, targetYear, targetDepartment } = req.body;
 
         if (name) candidate.name = name;
         if (email) candidate.email = email;
@@ -483,7 +493,6 @@ export const updateCandidate = async (req, res) => {
         if (role) candidate.role = role;
         if (targetYear) candidate.targetYear = targetYear;
         if (targetDepartment) candidate.targetDepartment = targetDepartment;
-        if (targetSection) candidate.targetSection = targetSection;
 
 
         if (req.files?.photo) {

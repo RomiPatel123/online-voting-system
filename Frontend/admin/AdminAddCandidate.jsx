@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import AdminSidebar from './components/AdminSidebar';
 import { useAuth } from '../src/context/AuthContext';
-import { addCandidate, getElectionById } from '../src/api/electionService';
+import { addCandidate, updateCandidate, getElectionById, getCandidateById } from '../src/api/electionService';
 import { UserPlus, ArrowLeft, Upload, Shield, Info } from 'lucide-react';
 import './admin.css';
 
 const AdminAddCandidate = () => {
-    const { electionId } = useParams();
+    const { electionId, candidateId } = useParams();
+    const isEditMode = !!candidateId;
     const { token } = useAuth();
     const navigate = useNavigate();
 
@@ -22,8 +24,7 @@ const AdminAddCandidate = () => {
         bio: '',
         role: 'CR',
         targetYear: 'All',
-        targetDepartment: 'All',
-        targetSection: 'All'
+        targetDepartment: 'All'
     });
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
@@ -37,33 +38,60 @@ const AdminAddCandidate = () => {
     };
 
     useEffect(() => {
-        const fetchElection = async () => {
+        const fetchData = async () => {
             try {
-                const data = await getElectionById(electionId, token);
-                setElection(data);
+                // 1. Fetch Election
+                const electionData = await getElectionById(electionId, token);
+                setElection(electionData);
+
+                // 2. If in Edit Mode, fetch Candidate
+                if (isEditMode) {
+                    const c = await getCandidateById(candidateId, token);
+                    setCandidateData({
+                        name: c.name || '',
+                        email: c.email || '',
+                        password: '', // Keep empty for security, only update if typed
+                        bio: c.bio || '',
+                        role: c.role || 'CR',
+                        targetYear: c.targetYear || 'All',
+                        targetDepartment: c.targetDepartment || 'All'
+                    });
+                    if (c.photo) {
+                        setPhotoPreview(`http://localhost:5000${c.photo}`);
+                    }
+                }
             } catch (err) {
                 console.error(err);
-                alert("Failed to load election details");
+                toast.error(isEditMode ? "Failed to load candidate details" : "Failed to load election details");
             } finally {
                 setLoading(false);
             }
         };
-        fetchElection();
-    }, [electionId, token]);
+        fetchData();
+    }, [electionId, candidateId, token, isEditMode]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
         try {
             const fd = new FormData();
-            Object.keys(candidateData).forEach(k => fd.append(k, candidateData[k]));
+            Object.keys(candidateData).forEach(k => {
+                // Only append password if it's not empty (during edit)
+                if (k === 'password' && isEditMode && !candidateData[k]) return;
+                fd.append(k, candidateData[k]);
+            });
             if (photo) fd.append('photo', photo);
 
-            await addCandidate(electionId, fd, token);
-            alert("Candidate added successfully!");
+            if (isEditMode) {
+                await updateCandidate(candidateId, fd, token);
+                toast.success("Candidate updated successfully!");
+            } else {
+                await addCandidate(electionId, fd, token);
+                toast.success("Candidate added successfully!");
+            }
             navigate('/admin/elections');
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setSubmitting(false);
         }
@@ -105,12 +133,16 @@ const AdminAddCandidate = () => {
                         >
                             <ArrowLeft size={14} /> Back to Elections
                         </button>
-                        <h1 className="page-title" style={{ fontSize: 32, fontWeight: 950 }}>Add Candidate</h1>
+                        <h1 className="page-title" style={{ fontSize: 32, fontWeight: 950 }}>
+                            {isEditMode ? 'Update Candidate' : 'Add Candidate'}
+                        </h1>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10 }}>
                             <span className="badge badge-active" style={{ background: '#e0e7ff', color: '#4338ca', fontWeight: 800 }}>
                                 🗳️ {election?.title || 'Loading...'}
                             </span>
-                            <span style={{ fontSize: 13, color: '#64748b', fontWeight: 500 }}>Manual Registration Portal</span>
+                            <span style={{ fontSize: 13, color: '#64748b', fontWeight: 500 }}>
+                                {isEditMode ? 'Modify Leadership Registry' : 'Manual Registration Portal'}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -168,13 +200,13 @@ const AdminAddCandidate = () => {
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label className="form-label">Temporary Password</label>
+                                            <label className="form-label">{isEditMode ? 'Update Password (Optional)' : 'Temporary Password'}</label>
                                             <div style={{ position: 'relative' }}>
                                                 <input 
                                                     type="password" 
                                                     className="form-input" 
-                                                    placeholder="••••••••" 
-                                                    required
+                                                    placeholder={isEditMode ? "Leave blank to keep current" : "••••••••"} 
+                                                    required={!isEditMode}
                                                     value={candidateData.password} 
                                                     onChange={e => setCandidateData({ ...candidateData, password: e.target.value })} 
                                                 />
@@ -264,19 +296,6 @@ const AdminAddCandidate = () => {
                                                 <option value="BAJMC">BAJMC</option>
                                             </select>
                                         </div>
-                                        <div className="form-group">
-                                            <label className="form-label">Target Section</label>
-                                            <select 
-                                                className="form-input" 
-                                                value={candidateData.targetSection} 
-                                                onChange={e => setCandidateData({ ...candidateData, targetSection: e.target.value })}
-                                            >
-                                                <option value="All">All Sections</option>
-                                                <option value="A">Section A</option>
-                                                <option value="B">Section B</option>
-                                                <option value="C">Section C</option>
-                                            </select>
-                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -295,7 +314,7 @@ const AdminAddCandidate = () => {
                                 onClick={() => navigate('/admin/elections')}
                                 disabled={submitting}
                             >
-                                Cancel Registration
+                                {isEditMode ? 'Discard Changes' : 'Cancel Registration'}
                             </button>
                             <button 
                                 type="submit" 
@@ -311,9 +330,9 @@ const AdminAddCandidate = () => {
                                 disabled={submitting}
                             >
                                 {submitting ? (
-                                    <><span className="spinner" style={{ marginRight: 10 }} /> Processing Registration...</>
+                                    <><span className="spinner" style={{ marginRight: 10 }} /> {isEditMode ? 'Updating...' : 'Processing...'}</>
                                 ) : (
-                                    <>Finalize & Add Candidate</>
+                                    <>{isEditMode ? 'Save Profile Changes' : 'Finalize & Add Candidate'}</>
                                 )}
                             </button>
                         </div>

@@ -37,7 +37,7 @@ const AdminSidebar = () => {
                         <Vote size={18} />
                     </div>
                     <div>
-                        <div className="brand-name">VoteAdmin</div>
+                        <div className="brand-name">Samashti Admin</div>
                         <div className="brand-tagline">Control Panel</div>
                     </div>
                 </div>

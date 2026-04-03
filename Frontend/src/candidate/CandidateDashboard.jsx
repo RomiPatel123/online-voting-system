@@ -58,7 +58,7 @@ const CandidateDashboard = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-[#0b1220] border-r border-gray-800 p-6 flex flex-col justify-between">
         <div>
-          <h1 className="text-xl font-extrabold mb-8 tracking-wider bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">VoteCentral</h1>
+          <h1 className="text-xl font-extrabold mb-8 tracking-wider bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Samashti</h1>
 
           <nav className="space-y-4">
             <SidebarItem active icon={<FaChartBar />} text="Overview" />

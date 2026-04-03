@@ -44,7 +44,6 @@ const candidateSchema = new mongoose.Schema(
 
         targetYear: { type: String, default: "All" },
         targetDepartment: { type: String, default: "All" },
-        targetSection: { type: String, default: "All" },
 
         voteCount: {
             type: Number,
