@@ -96,8 +96,6 @@ export const loginUser = async (req, res) => {
           name: candidate.name,
           email: candidate.email,
           role: "candidate",
-          party: candidate.party,
-          partySymbol: candidate.partySymbol,
           photo: candidate.photo,
           election: candidate.election,
           token: generateToken(candidate._id),

@@ -14,15 +14,15 @@ const createAdmin = async () => {
         const adminExists = await User.findOne({ email: "admin@vote.com" });
 
         if (adminExists) {
-            console.log("Admin account already exists with email: admin@vote.com");
-            process.exit();
+            console.log("Admin account already exists with email: admin@vote.com. Deleting to recreate...");
+            await User.deleteOne({ email: "admin@vote.com" });
         }
 
         // Create the admin user
         const adminUser = new User({
             name: "Super Admin",
             email: "admin@vote.com",
-            password: "adminpassword", // userModel.js has a pre-save hook that will hash this
+            password: "Test@123", // userModel.js has a pre-save hook that will hash this
             role: "admin",
             isVerified: true, // admin is automatically verified
         });
@@ -31,7 +31,7 @@ const createAdmin = async () => {
         console.log("✅ Admin account created successfully!");
         console.log("Login Credentials:");
         console.log("Email: admin@vote.com");
-        console.log("Password: adminpassword");
+        console.log("Password: Test@123");
         process.exit(0);
     } catch (error) {
         console.error("Error creating admin:", error.message);

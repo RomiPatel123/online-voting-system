@@ -20,16 +20,6 @@ const candidateSchema = new mongoose.Schema(
             required: true,
         },
 
-        party: {
-            type: String,
-            required: true,
-        },
-
-        partySymbol: {
-            type: String, // URL / path to party symbol image
-            default: "",
-        },
-
         photo: {
             type: String, // URL / path to candidate photo
             default: "",

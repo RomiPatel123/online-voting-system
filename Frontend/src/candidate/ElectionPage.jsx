@@ -240,13 +240,9 @@ export default function ElectionPage() {
                             ) : (
                               <div className="w-28 h-28 rounded-full bg-gray-200 border-4 border-white shadow-lg mx-auto"></div>
                             )}
-                            {candidate.partySymbol && (
-                              <img src={`http://localhost:5000${candidate.partySymbol}`} alt={candidate.party} className="w-10 h-10 rounded-full bg-white p-1 absolute bottom-0 right-0 shadow-md border" />
-                            )}
                           </div>
 
                           <h4 className="font-black text-xl text-gray-800 mb-1">{candidate.name}</h4>
-                          <p className="text-indigo-600 font-bold text-sm tracking-wide uppercase mb-4">{candidate.party}</p>
                           <p className="text-gray-500 text-sm mb-8 leading-relaxed px-2 h-16 overflow-y-auto">
                             {candidate.bio || "No biography provided."}
                           </p>

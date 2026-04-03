@@ -78,7 +78,6 @@ const CandidateDashboard = () => {
             )}
             <div>
               <p className="text-sm font-semibold truncate w-32">{user?.name}</p>
-              <p className="text-xs text-gray-400 capitalize">{user?.party}</p>
             </div>
           </div>
 
@@ -139,9 +138,7 @@ const CandidateDashboard = () => {
                   </h1>
                   <p className="text-gray-400 font-medium mt-2 text-lg">Total Valid Votes Secured</p>
                 </div>
-                {user?.partySymbol && (
-                  <img src={`http://localhost:5000${user.partySymbol}`} alt="party" className="w-24 h-24 rounded-full bg-white p-2" />
-                )}
+
               </div>
 
               <div className="grid grid-cols-3 gap-8 mt-8">
@@ -187,7 +184,6 @@ const CandidateDashboard = () => {
                   <div className="w-32 h-32 rounded-full border-4 border-[#0f172a] bg-gray-700 mb-6 mx-auto flex items-center justify-center text-3xl font-bold">C</div>
                 )}
                 <h3 className="text-2xl font-black mb-1">{user?.name}</h3>
-                <p className="text-blue-400 font-bold uppercase tracking-wide text-sm mb-6">{user?.party}</p>
 
                 <div className="bg-[#0f172a] p-5 rounded-2xl text-sm text-gray-400 border border-gray-800 leading-relaxed shadow-inner w-full">
                   Official candidate for {user?.election?.title}.

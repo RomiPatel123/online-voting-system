@@ -34,7 +34,8 @@ body {
 /* ─── Layout Shell ──────────────────────────────────────────────── */
 .admin-shell {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* ─── Sidebar ───────────────────────────────────────────────────── */
@@ -44,8 +45,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 100vh;
-  position: sticky;
+  height: 100vh;
+  position: relative;
   top: 0;
   /* Subtle dot-grid texture */
   background-image:
@@ -910,5 +911,20 @@ body {
 
 /* ─── Animations ────────────────────────────────────────────────── */
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideInX { from { transform: translateX(-16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes spin    { to { transform: rotate(360deg); } }
+
+.animate-fade-in { animation: fadeIn 0.5s ease forwards; }
+.animate-slide-up { opacity: 0; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-slide-in { animation: slideInX 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}

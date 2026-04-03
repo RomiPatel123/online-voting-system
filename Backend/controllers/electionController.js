@@ -23,7 +23,7 @@ export const getPublicElections = async (req, res) => {
 export const getElections = async (req, res) => {
     try {
         const elections = await Election.find()
-            .populate("candidates", "name party partySymbol photo voteCount")
+            .populate("candidates", "name photo voteCount")
             .sort({ createdAt: -1 });
         res.json(elections);
     } catch (err) {
@@ -36,7 +36,7 @@ export const getElectionById = async (req, res) => {
     try {
         const election = await Election.findById(req.params.id).populate(
             "candidates",
-            "name party partySymbol photo bio voteCount"
+            "name photo bio voteCount"
         );
         if (!election) return res.status(404).json({ message: "Election not found" });
         res.json(election);
@@ -114,7 +114,7 @@ export const stopElection = async (req, res) => {
     try {
         const election = await Election.findById(req.params.id).populate(
             "candidates",
-            "name email party voteCount"
+            "name email voteCount"
         );
         if (!election) {
             console.error(`[ELECTION_STOP_ERROR] Election ${req.params.id} not found in database.`);
@@ -193,7 +193,7 @@ export const stopElection = async (req, res) => {
                     <div>
                       <p style="margin: 0; color: #166534; font-size: 13px; font-weight: 700; text-transform: uppercase;">Elected Representative</p>
                       <h3 style="margin: 4px 0 0; color: #14532d; font-size: 18px; font-weight: 800;">${winner.name}</h3>
-                      <p style="margin: 2px 0 0; color: #15803d; font-size: 14px;">${winner.party}</p>
+
                     </div>
                   </div>
                   ` : ''}
@@ -212,7 +212,7 @@ export const stopElection = async (req, res) => {
                         <tr style="border-bottom: 1px solid #f1f5f9;">
                           <td style="padding: 12px 0; color: #334155;">
                             <span style="font-weight: 700; margin-right: 8px; color: ${idx === 0 ? '#f59e0b' : '#94a3b8'};">#${idx + 1}</span>
-                            <strong>${c.name}</strong> <span style="font-size: 12px; color: #94a3b8; margin-left: 5px;">(${c.party})</span>
+                            <strong>${c.name}</strong>
                           </td>
                           <td style="padding: 12px 0; text-align: right; color: #1e293b; font-weight: 600;">${c.voteCount}</td>
                         </tr>
@@ -265,7 +265,7 @@ export const getElectionResults = async (req, res) => {
     try {
         const election = await Election.findById(req.params.id).populate(
             "candidates",
-            "name party partySymbol photo voteCount"
+            "name photo voteCount"
         );
         if (!election) return res.status(404).json({ message: "Election not found" });
 
@@ -286,8 +286,7 @@ export const getElectionResults = async (req, res) => {
                 rank: i + 1,
                 _id: c._id,
                 name: c.name,
-                party: c.party,
-                partySymbol: c.partySymbol,
+
                 photo: c.photo,
                 voteCount: c.voteCount,
                 percentage: totalVotes > 0 ? ((c.voteCount / totalVotes) * 100).toFixed(1) : 0,
@@ -324,15 +323,13 @@ export const addCandidate = async (req, res) => {
         const election = await Election.findById(req.params.id);
         if (!election) return res.status(404).json({ message: "Election not found" });
 
-        const { name, email, password, party, bio, role, targetYear, targetDepartment, targetSection } = req.body;
+        const { name, email, password, bio, role, targetYear, targetDepartment, targetSection } = req.body;
 
         // Hash password for candidate login
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const partySymbol = req.files?.partySymbol
-            ? `/uploads/${req.files.partySymbol[0].filename}`
-            : "";
+
         const photo = req.files?.photo
             ? `/uploads/${req.files.photo[0].filename}`
             : "";
@@ -341,9 +338,7 @@ export const addCandidate = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            party,
             bio,
-            partySymbol,
             photo,
             election: election._id,
             role,
@@ -385,10 +380,7 @@ export const addCandidate = async (req, res) => {
                     <td style="padding: 6px 0; color: #64748b; width: 140px;">Election</td>
                     <td style="padding: 6px 0; color: #1e293b; font-weight: 600;">${election.title}</td>
                   </tr>
-                  <tr>
-                    <td style="padding: 6px 0; color: #64748b;">Party</td>
-                    <td style="padding: 6px 0; color: #1e293b; font-weight: 600;">${party}</td>
-                  </tr>
+
                 </table>
               </div>
 
@@ -479,7 +471,7 @@ export const updateCandidate = async (req, res) => {
         const candidate = await Candidate.findById(req.params.id);
         if (!candidate) return res.status(404).json({ message: "Candidate not found" });
 
-        const { name, email, password, party, bio, role, targetYear, targetDepartment, targetSection } = req.body;
+        const { name, email, password, bio, role, targetYear, targetDepartment, targetSection } = req.body;
 
         if (name) candidate.name = name;
         if (email) candidate.email = email;
@@ -487,16 +479,13 @@ export const updateCandidate = async (req, res) => {
             const salt = await bcrypt.genSalt(10);
             candidate.password = await bcrypt.hash(password, salt);
         }
-        if (party) candidate.party = party;
         if (bio !== undefined) candidate.bio = bio;
         if (role) candidate.role = role;
         if (targetYear) candidate.targetYear = targetYear;
         if (targetDepartment) candidate.targetDepartment = targetDepartment;
         if (targetSection) candidate.targetSection = targetSection;
 
-        if (req.files?.partySymbol) {
-            candidate.partySymbol = `/uploads/${req.files.partySymbol[0].filename}`;
-        }
+
         if (req.files?.photo) {
             candidate.photo = `/uploads/${req.files.photo[0].filename}`;
         }

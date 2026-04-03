@@ -150,7 +150,7 @@ const AdminResults = () => {
                                                 : '—'}
                                         </div>
                                         {results.results?.length > 0 && results.results[0].voteCount > 0 && (
-                                            <div className="stat-trend">{results.results[0].party} · {results.results[0].voteCount} votes</div>
+                                            <div className="stat-trend">{results.results[0].voteCount} votes cast</div>
                                         )}
                                     </div>
                                 </div>
@@ -177,7 +177,6 @@ const AdminResults = () => {
                                                 <tr>
                                                     <th>Rank</th>
                                                     <th>Candidate</th>
-                                                    <th>Party</th>
                                                     <th style={{ textAlign: 'right' }}>Votes</th>
                                                     <th style={{ textAlign: 'right' }}>Vote Share</th>
                                                 </tr>
@@ -204,7 +203,6 @@ const AdminResults = () => {
                                                                 <span style={{ fontWeight: 600 }}>{c.name}</span>
                                                             </div>
                                                         </td>
-                                                        <td style={{ color: '#64748b' }}>{c.party}</td>
                                                         <td style={{ textAlign: 'right', fontWeight: 800, fontSize: 18, color: i === 0 ? '#10b981' : '#6366f1' }}>
                                                             {c.voteCount}
                                                         </td>

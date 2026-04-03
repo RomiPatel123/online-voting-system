@@ -43,7 +43,7 @@ export default function CreateElectionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="h-screen bg-gray-100 flex overflow-hidden">
 
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-sm flex flex-col justify-between">
@@ -81,7 +81,7 @@ export default function CreateElectionPage() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 p-10">
+      <div className="flex-1 p-10 overflow-y-auto">
 
         {/* Header */}
         <div className="flex justify-between items-center mb-8">

@@ -19,6 +19,7 @@ import AdminDashboard from '../admin/AdminDashboard'
 import AdminElections from '../admin/AdminElections'
 import AdminVoters from '../admin/AdminVoters'
 import AdminResults from '../admin/AdminResults'
+import AdminAddCandidate from '../admin/AdminAddCandidate'
 import LandingPage from './components/LandingPage'
 
 const App = () => {
@@ -94,6 +95,14 @@ const App = () => {
           element={
             // <ProtectedRoute allowedRoles={["admin"]}>
               <AdminResults />
+            // </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/elections/:electionId/add-candidate"
+          element={
+            // <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminAddCandidate />
             // </ProtectedRoute>
           }
         />
