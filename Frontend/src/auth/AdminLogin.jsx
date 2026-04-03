@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { FaEnvelope, FaLock } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaUserShield } from "react-icons/fa";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { MdHowToVote } from "react-icons/md";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { login } from "../api/authService";
 import { useAuth } from "../context/AuthContext";
 import './auth.css';
 
-const VoterLogin = () => {
+const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +17,7 @@ const VoterLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/election";
+  const from = location.state?.from?.pathname || "/admin";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,15 +31,16 @@ const VoterLogin = () => {
     try {
       setLoading(true);
       const authData = await login({ email, password });
+      
+      if (authData.role !== "admin") {
+         setError("Access denied. Administrator privileges required.");
+         setLoading(false);
+         return;
+      }
+
       saveAuth(authData);
 
-      if (authData.role === "admin") {
-        navigate("/admin", { replace: true });
-      } else if (authData.role === "candidate") {
-        navigate("/CandidateDashboard", { replace: true });
-      } else {
-        navigate(from, { replace: true });
-      }
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
     } finally {
@@ -49,48 +49,35 @@ const VoterLogin = () => {
   };
 
   return (
-    <div className="auth-page voter">
-      <div className="auth-container">
-        {/* Left Side (Banner) */}
-        <div className="auth-banner">
-          <img src="/election_login_image.png" alt="Secure Voting" />
-          <div className="auth-banner-overlay">
-            <h2 className="auth-banner-title">Empower Your Voice</h2>
-            <p className="auth-banner-text">
-              Access the most transparent, secure, and modern digital voting experience. Your identity is protected, and your vote makes a difference.
-            </p>
-          </div>
-        </div>
-
-        {/* Right Side (Form) */}
+    <div className="auth-page admin">
+      <div className="auth-container single">
         <div className="auth-form-side">
           <div className="auth-icon-wrap">
-            <MdHowToVote size={32} />
+            <FaUserShield size={32} />
           </div>
 
-          <h1 className="auth-title">Voter Login</h1>
-          <p className="auth-subtitle">Secure access to the Election Portal</p>
+          <h1 className="auth-title">System Administrator</h1>
+          <p className="auth-subtitle">Secure backend election management access</p>
 
           {error && <div className="auth-error">{error}</div>}
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
-              <label className="auth-label">Email Address</label>
+              <label className="auth-label">Administrator Email</label>
               <div className="auth-input-group">
                 <FaEnvelope className="auth-input-icon" />
                 <input
                   type="email"
-                  placeholder="voter@organization.com"
+                  placeholder="admin@system.gov"
                   className="auth-input"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
                 />
               </div>
             </div>
 
             <div className="auth-field">
-              <label className="auth-label">Password</label>
+              <label className="auth-label">Security Key / Password</label>
               <div className="auth-input-group">
                 <FaLock className="auth-input-icon" />
                 <input
@@ -99,7 +86,6 @@ const VoterLogin = () => {
                   className="auth-input"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -113,18 +99,32 @@ const VoterLogin = () => {
 
             <button type="submit" disabled={loading} className="auth-btn">
               {loading ? (
-                <><span className="auth-spinner" /> Logging in…</>
+                <><span className="auth-spinner" /> Verifying…</>
               ) : (
-                "Log In to Vote"
+                "Authorize Access"
               )}
             </button>
-            <div style={{ textAlign: 'right', marginTop: '10px' }}>
-              <Link to="/forgot-password" style={{ color: '#2563eb', fontSize: '13px', fontWeight: '500' }}>Forgot Password?</Link>
+            <div className="auth-extra-links" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', fontSize: '13px' }}>
+              <button 
+                type="button" 
+                onClick={() => navigate('/forgot-password')}
+                style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', padding: 0 }}
+              >
+                Forgot Password?
+              </button>
+              <button 
+                type="button" 
+                onClick={() => navigate('/admin/change-password')}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}
+              >
+                Change Admin Key
+              </button>
             </div>
           </form>
 
-          <p className="auth-link-text">
-            Don't have a voting account? <Link to="/register" className="auth-link">Register for elections</Link>
+          <p className="auth-link-text" style={{ fontSize: 12, borderTop: '1px solid #334155', paddingTop: 16 }}>
+            Admin interactions are strictly monitored and logged.<br/>
+            <span style={{ fontFamily: 'monospace', opacity: 0.6 }}>NODE_ENV: production</span>
           </p>
         </div>
       </div>
@@ -132,4 +132,4 @@ const VoterLogin = () => {
   );
 };
 
-export default VoterLogin;
+export default AdminLogin;

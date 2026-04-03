@@ -6,25 +6,35 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 import VoterLogin from './auth/VoterLogin'
 import VoterRegister from './auth/VoterRegister'
+import CandidateLogin from './auth/CandidateLogin'
+import AdminLogin from './auth/AdminLogin'
 
 import ElectionPage from './candidate/ElectionPage'
 import CandidateDashboard from './candidate/CandidateDashboard'
+import ForgotPassword from './auth/ForgotPassword'
+import ResetPassword from './auth/ResetPassword'
+import ChangeAdminPassword from './auth/ChangeAdminPassword'
 
 import AdminDashboard from '../admin/AdminDashboard'
 import AdminElections from '../admin/AdminElections'
 import AdminVoters from '../admin/AdminVoters'
 import AdminResults from '../admin/AdminResults'
+import LandingPage from './components/LandingPage'
 
 const App = () => {
   return (
     <AuthProvider>
       <Routes>
-        {/* Default → Login */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* Default → Landing Page */}
+        <Route path="/" element={<LandingPage />} />
 
         {/* Public routes */}
         <Route path="/login" element={<VoterLogin />} />
+        <Route path="/candidate-login" element={<CandidateLogin />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/register" element={<VoterRegister />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
 
         {/* Protected: voters */}
         <Route
@@ -53,6 +63,14 @@ const App = () => {
             // <ProtectedRoute allowedRoles={["admin"]}>
               <AdminDashboard />
             // </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/change-password"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <ChangeAdminPassword />
+            </ProtectedRoute>
           }
         />
         <Route

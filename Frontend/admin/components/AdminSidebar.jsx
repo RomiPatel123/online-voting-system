@@ -1,7 +1,8 @@
 import React from 'react';
-import { LayoutDashboard, Users, BarChart3, Settings, LogOut, CheckSquare } from 'lucide-react';
+import { LayoutDashboard, Users, BarChart3, LogOut, CheckSquare, Vote } from 'lucide-react';
 import { useAuth } from '../../src/context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import '../admin.css';
 
 const AdminSidebar = () => {
     const { user, logout } = useAuth();
@@ -14,21 +15,36 @@ const AdminSidebar = () => {
     };
 
     const navItems = [
-        { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-        { label: 'Elections', path: '/admin/elections', icon: CheckSquare },
-        { label: 'Voters Verification', path: '/admin/voters', icon: Users },
-        { label: 'Results', path: '/admin/results', icon: BarChart3 },
+        { label: 'Dashboard',          path: '/admin',          icon: LayoutDashboard },
+        { label: 'Elections',           path: '/admin/elections', icon: CheckSquare },
+        { label: 'Voter Verification',  path: '/admin/voters',   icon: Users },
+        { label: 'Results',             path: '/admin/results',  icon: BarChart3 },
     ];
 
+    const initials = (user?.name || 'Admin User')
+        .split(' ')
+        .map(w => w[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase();
+
     return (
-        <aside className="w-64 bg-white shadow-sm flex flex-col justify-between min-h-screen">
+        <aside className="admin-sidebar">
+            {/* Brand */}
             <div>
-                <div className="p-6 flex items-center gap-2">
-                    <div className="bg-blue-600 text-white p-2 rounded-lg font-bold">VA</div>
-                    <h1 className="text-xl font-bold text-blue-600">VoteAdmin</h1>
+                <div className="sidebar-brand">
+                    <div className="brand-icon">
+                        <Vote size={18} />
+                    </div>
+                    <div>
+                        <div className="brand-name">VoteAdmin</div>
+                        <div className="brand-tagline">Control Panel</div>
+                    </div>
                 </div>
 
-                <nav className="mt-6 space-y-2">
+                {/* Navigation */}
+                <nav className="sidebar-nav">
+                    <div className="nav-section-label">Main Menu</div>
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.path;
@@ -36,12 +52,9 @@ const AdminSidebar = () => {
                             <div
                                 key={item.path}
                                 onClick={() => navigate(item.path)}
-                                className={`flex items-center gap-3 px-6 py-3 cursor-pointer transition ${isActive
-                                    ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
-                                    : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600'
-                                    }`}
+                                className={`nav-item ${isActive ? 'active' : ''}`}
                             >
-                                <Icon size={18} />
+                                <span className="nav-icon"><Icon size={17} /></span>
                                 {item.label}
                             </div>
                         );
@@ -49,15 +62,18 @@ const AdminSidebar = () => {
                 </nav>
             </div>
 
-            <div className="p-6 border-t">
-                <p className="font-semibold">{user?.name || 'Admin User'}</p>
-                <p className="text-sm text-gray-500 mb-4 capitalize">{user?.role || 'admin'}</p>
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 text-red-500 hover:bg-red-50 w-full px-3 py-2 rounded-lg transition"
-                >
-                    <LogOut size={18} />
-                    Logout
+            {/* Footer */}
+            <div className="sidebar-footer">
+                <div className="admin-profile">
+                    <div className="admin-avatar">{initials}</div>
+                    <div>
+                        <div className="admin-name">{user?.name || 'Admin User'}</div>
+                        <div className="admin-role">{user?.role || 'Administrator'}</div>
+                    </div>
+                </div>
+                <button className="btn-logout" onClick={handleLogout}>
+                    <LogOut size={15} />
+                    Sign Out
                 </button>
             </div>
         </aside>

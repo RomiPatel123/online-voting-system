@@ -36,6 +36,12 @@ export default function CreateElectionPage() {
     setCandidates(updated);
   };
 
+  const updateCandidate = (index, field, value) => {
+    const updated = [...candidates];
+    updated[index][field] = value;
+    setCandidates(updated);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
 
@@ -161,12 +167,14 @@ export default function CreateElectionPage() {
                 <input
                   type="text"
                   value={candidate.name}
+                  onChange={(e) => updateCandidate(index, "name", e.target.value)}
                   placeholder="Full Name"
                   className="border rounded-lg px-3 py-2"
                 />
                 <input
                   type="text"
                   value={candidate.position}
+                  onChange={(e) => updateCandidate(index, "position", e.target.value)}
                   placeholder="Position / Title"
                   className="border rounded-lg px-3 py-2"
                 />
@@ -174,6 +182,7 @@ export default function CreateElectionPage() {
 
               <textarea
                 value={candidate.bio}
+                onChange={(e) => updateCandidate(index, "bio", e.target.value)}
                 placeholder="Candidate Bio"
                 className="border rounded-lg px-3 py-2 w-full mt-3"
                 rows={2}

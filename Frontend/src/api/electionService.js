@@ -40,6 +40,17 @@ export const createElection = async (electionData, token) => {
     return data;
 };
 
+export const updateElection = async (id, electionData, token) => {
+    const res = await fetch(`${BASE_URL}/${id}`, {
+        method: "PUT",
+        headers: getHeaders(token),
+        body: JSON.stringify(electionData),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to update election");
+    return data;
+};
+
 export const startElection = async (id, token) => {
     const res = await fetch(`${BASE_URL}/${id}/start`, {
         method: "PUT",
@@ -95,5 +106,16 @@ export const deleteCandidate = async (candidateId, token) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to delete candidate");
+    return data;
+};
+
+export const updateCandidate = async (candidateId, formData, token) => {
+    const res = await fetch(`${BASE_URL}/candidates/${candidateId}`, {
+        method: "PUT",
+        headers: getHeaders(token, true),
+        body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to update candidate");
     return data;
 };

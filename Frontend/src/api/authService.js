@@ -2,7 +2,7 @@
 const BASE_URL = "/api/auth";
 
 /**
- * Registers a new voter via FormData (supports Aadhar uploads).
+ * Registers a new voter via FormData (supports ID Card uploads).
  * @param {FormData} formData
  */
 export const register = async (formData) => {
@@ -46,5 +46,41 @@ export const getProfile = async (token) => {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
+    return data;
+};
+
+export const forgotPassword = async (email) => {
+    const res = await fetch(`${BASE_URL}/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to send reset email");
+    return data;
+};
+
+export const resetPassword = async (resetToken, password) => {
+    const res = await fetch(`${BASE_URL}/reset-password/${resetToken}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to reset password");
+    return data;
+};
+
+export const changePassword = async (token, oldPassword, newPassword) => {
+    const res = await fetch(`${BASE_URL}/change-password`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ oldPassword, newPassword }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to change password");
     return data;
 };
