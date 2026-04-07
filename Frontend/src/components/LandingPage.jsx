@@ -59,20 +59,19 @@ const LandingPage = () => {
           {/* Badge */}
           <div className="lp-hero-badge">
             <span className="lp-hero-badge-dot" />
-            Next-Generation Voting Platform
+            Next-Generation Council Voting Platform
           </div>
 
           {/* Headline */}
           <h1 className="lp-hero-title">
-            Secure, Transparent &amp;{' '}
-            <span className="lp-hero-title-accent">Reliable Elections</span>
+            Empowering <span className="lp-hero-title-accent">Study Hallians:</span><br/>
+            Secure &amp; Transparent Council Elections
           </h1>
 
           {/* Subtext */}
           <p className="lp-hero-subtitle">
-            Empower your organization with a state-of-the-art digital voting
-            infrastructure built on top-tier security standards and
-            end-to-end verifiability.
+            Lucknow's premier student election infrastructure for Study Hall College. 
+            Built on top-tier security standards to ensure every voice counts in our community.
           </p>
 
           {/* Login buttons */}
@@ -133,11 +132,11 @@ const LandingPage = () => {
       <section id="features" className="lp-features">
         <div className="lp-section-inner">
           <div className="lp-section-header">
-            <div className="lp-section-tag">Why Samashti</div>
-            <h2 className="lp-section-title">Built for trust, designed for everyone</h2>
+            <div className="lp-section-tag">Why Samashti @ Study Hall</div>
+            <h2 className="lp-section-title">Built for Integrity, Designed for Students</h2>
             <p className="lp-section-subtitle">
-              We've re-imagined the democratic process from the ground up —
-              guaranteeing security, accessibility, and absolute transparency.
+              We've re-imagined the democratic process for Study Hall College Lucknow —
+              guaranteeing security, accessibility, and absolute transparency in council representation.
             </p>
           </div>
 
@@ -189,10 +188,10 @@ const LandingPage = () => {
 
         <div className="lp-section-inner">
           <div className="lp-section-header">
-            <div className="lp-section-tag">How It Works</div>
-            <h2 className="lp-section-title">Simple. Fast. Verifiable.</h2>
+            <div className="lp-section-tag">Direct Democracy</div>
+            <h2 className="lp-section-title">Fast. Simple. Verifiable.</h2>
             <p className="lp-section-subtitle">
-              Participating in democracy has never been easier.
+              Participating in Study Hall's student leadership has never been easier.
               Just follow these three intuitive steps.
             </p>
           </div>
@@ -241,8 +240,8 @@ const LandingPage = () => {
             Ready to experience the future of voting?
           </h2>
           <p className="lp-cta-subtitle">
-            Join thousands of users who have already upgraded their democratic
-            infrastructure with Samashti.
+            Join thousands of Study Hallians who have already upgraded their 
+            democratic infrastructure with Samashti.
           </p>
           <button className="lp-cta-btn" onClick={() => navigate('/register')}>
             <Zap size={18} />
@@ -264,8 +263,8 @@ const LandingPage = () => {
               <span className="lp-footer-brand-name">Samashti</span>
             </div>
             <p className="lp-footer-desc">
-              Next-generation voting platform ensuring security, transparency,
-              and accessibility for elections of all scales.
+              Lucknow's premier student voting platform ensuring security, transparency,
+              and accessibility for Study Hall College council elections.
             </p>
           </div>
 

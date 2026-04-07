@@ -44,20 +44,20 @@
 .lp-brand-icon {
   width: 38px;
   height: 38px;
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: linear-gradient(135deg, #800000, #5a0000);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+  box-shadow: 0 4px 12px rgba(128,0,0,0.35);
   flex-shrink: 0;
 }
 
 .lp-brand-name {
   font-size: 20px;
   font-weight: 800;
-  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  background: linear-gradient(135deg, #800000, #FFD700);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -110,10 +110,10 @@
   font-size: 14px;
   font-weight: 700;
   color: white;
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: linear-gradient(135deg, #800000, #5a0000);
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+  box-shadow: 0 4px 12px rgba(128,0,0,0.3);
   transition: all 0.18s;
   font-family: inherit;
 }
@@ -129,7 +129,7 @@
   padding-bottom: 100px;
   position: relative;
   overflow: hidden;
-  background: #ffffff;
+  background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.8)), url('/study_hall_hero.png') center/cover no-repeat;
   text-align: center;
 }
 
