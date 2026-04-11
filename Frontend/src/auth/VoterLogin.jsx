@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaLock } from "react-icons/fa";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 import { MdHowToVote } from "react-icons/md";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { login } from "../api/authService";
@@ -49,38 +49,49 @@ const VoterLogin = () => {
   };
 
   return (
-    <div className="auth-page voter">
-      <div className="auth-container">
+    <div className="auth-page voter font-sans">
+      <div className="auth-container shadow-2xl">
         {/* Left Side (Banner) */}
         <div className="auth-banner">
-          <img src="/election_login_image.png" alt="Secure Voting" />
+          <img src="/study_hall_hero.png" alt="Study Hall College" />
           <div className="auth-banner-overlay">
-            <h2 className="auth-banner-title">Empower Your Voice</h2>
+            <h2 className="auth-banner-title">Welcome Back, Study Hallian</h2>
             <p className="auth-banner-text">
-              Access the most transparent, secure, and modern digital voting experience. Your identity is protected, and your vote makes a difference.
+              Securely access your electoral dashboard to cast your ballot and stay informed on Study Hall College's council progress.
             </p>
           </div>
         </div>
 
         {/* Right Side (Form) */}
         <div className="auth-form-side">
-          <div className="auth-icon-wrap">
-            <MdHowToVote size={32} />
+          <button type="button" onClick={() => navigate(-1)} className="auth-back-btn">
+            <FiArrowLeft /> Back
+          </button>
+
+          <div className="auth-header-group">
+            <div className="auth-icon-wrap">
+              <MdHowToVote size={32} />
+            </div>
+            <div className="auth-header-content">
+              <h1 className="auth-title">Voter Login</h1>
+              <p className="auth-subtitle">Lucknow Campus Portal Access</p>
+            </div>
           </div>
 
-          <h1 className="auth-title">Voter Login</h1>
-          <p className="auth-subtitle">Secure access to the Election Portal</p>
-
-          {error && <div className="auth-error">{error}</div>}
+          {error && (
+            <div className="auth-error">
+               <span>{error}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
-              <label className="auth-label">Email Address</label>
+              <label className="auth-label">College Email</label>
               <div className="auth-input-group">
                 <FaEnvelope className="auth-input-icon" />
                 <input
                   type="email"
-                  placeholder="voter@organization.com"
+                  placeholder="student@studyhall.edu"
                   className="auth-input"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -90,7 +101,7 @@ const VoterLogin = () => {
             </div>
 
             <div className="auth-field">
-              <label className="auth-label">Password</label>
+              <label className="auth-label">Secure Password</label>
               <div className="auth-input-group">
                 <FaLock className="auth-input-icon" />
                 <input
@@ -113,18 +124,18 @@ const VoterLogin = () => {
 
             <button type="submit" disabled={loading} className="auth-btn">
               {loading ? (
-                <><span className="auth-spinner" /> Logging in…</>
+                <><span className="auth-spinner" /> Authenticating…</>
               ) : (
-                "Log In to Vote"
+                "Sign In to Vote"
               )}
             </button>
-            <div style={{ textAlign: 'right', marginTop: '10px' }}>
-              <Link to="/forgot-password" style={{ color: '#2563eb', fontSize: '13px', fontWeight: '500' }}>Forgot Password?</Link>
+            <div style={{ textAlign: 'right', marginTop: '12px' }}>
+              <Link to="/forgot-password" style={{ color: 'var(--primary-maroon)', fontSize: '13px', fontWeight: '700' }}>Forgot Credentials?</Link>
             </div>
           </form>
 
           <p className="auth-link-text">
-            Don't have a voting account? <Link to="/register" className="auth-link">Register for elections</Link>
+            Don't have a voting account? <Link to="/register" className="auth-link">Enroll in elections</Link>
           </p>
         </div>
       </div>

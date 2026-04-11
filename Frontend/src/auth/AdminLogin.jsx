@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaLock, FaUserShield } from "react-icons/fa";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { login } from "../api/authService";
 import { useAuth } from "../context/AuthContext";
@@ -49,15 +49,22 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="auth-page admin">
-      <div className="auth-container single">
+    <div className="auth-page admin font-sans">
+      <div className="auth-container single shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
         <div className="auth-form-side">
-          <div className="auth-icon-wrap">
-            <FaUserShield size={32} />
-          </div>
+          <button type="button" onClick={() => navigate(-1)} className="auth-back-btn">
+            <FiArrowLeft /> Back
+          </button>
 
-          <h1 className="auth-title">System Administrator</h1>
-          <p className="auth-subtitle">Secure backend election management access</p>
+          <div className="auth-header-group">
+            <div className="auth-icon-wrap">
+              <FaUserShield size={32} />
+            </div>
+            <div className="auth-header-content">
+              <h1 className="auth-title">System Administrator</h1>
+              <p className="auth-subtitle">Secure infrastructure access</p>
+            </div>
+          </div>
 
           {error && <div className="auth-error">{error}</div>}
 
@@ -68,8 +75,8 @@ const AdminLogin = () => {
                 <FaEnvelope className="auth-input-icon" />
                 <input
                   type="email"
-                  placeholder="admin@system.gov"
-                  className="auth-input"
+                  placeholder="admin@studyhall.edu"
+                  className="auth-input border-none"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -77,13 +84,13 @@ const AdminLogin = () => {
             </div>
 
             <div className="auth-field">
-              <label className="auth-label">Security Key / Password</label>
+              <label className="auth-label">Security Key</label>
               <div className="auth-input-group">
                 <FaLock className="auth-input-icon" />
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="auth-input"
+                  className="auth-input border-none"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -99,32 +106,31 @@ const AdminLogin = () => {
 
             <button type="submit" disabled={loading} className="auth-btn">
               {loading ? (
-                <><span className="auth-spinner" /> Verifying…</>
+                <><span className="auth-spinner" /> Authorizing…</>
               ) : (
-                "Authorize Access"
+                "Authorize System Access"
               )}
             </button>
-            <div className="auth-extra-links" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', fontSize: '13px' }}>
+            <div className="auth-extra-links flex justify-between mt-4">
               <button 
                 type="button" 
                 onClick={() => navigate('/forgot-password')}
-                style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', padding: 0 }}
+                className="bg-transparent border-none text-[var(--accent-gold)] cursor-pointer p-0 text-xs font-bold hover:underline"
               >
                 Forgot Password?
               </button>
-              <button 
+              {/* <button 
                 type="button" 
                 onClick={() => navigate('/admin/change-password')}
-                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}
+                className="bg-transparent border-none text-slate-500 cursor-pointer p-0 text-xs font-bold hover:text-slate-300"
               >
-                Change Admin Key
-              </button>
+                Change Access Key
+              </button> */}
             </div>
           </form>
 
-          <p className="auth-link-text" style={{ fontSize: 12, borderTop: '1px solid #334155', paddingTop: 16 }}>
-            Admin interactions are strictly monitored and logged.<br/>
-            <span style={{ fontFamily: 'monospace', opacity: 0.6 }}>NODE_ENV: production</span>
+          <p className="auth-link-text text-[10px] border-t border-slate-800 pt-6 mt-8 opacity-60">
+            Internal Study Hall infrastructure. All administrative sessions are encrypted, logged, and monitored.
           </p>
         </div>
       </div>

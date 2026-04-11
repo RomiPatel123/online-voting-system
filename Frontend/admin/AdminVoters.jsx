@@ -12,6 +12,10 @@ const AdminVoters = () => {
     const [loading, setLoading] = useState(true);
     const [selectedVoter, setSelectedVoter] = useState(null);
 
+    const [filterDepartment, setFilterDepartment] = useState('All');
+    const [filterYear, setFilterYear] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
+
     const fetchVoters = async () => {
         setLoading(true);
         try {
@@ -36,8 +40,17 @@ const AdminVoters = () => {
         catch (err) { toast.error(err.message); }
     };
 
+    const filteredVoters = voters.filter(v => {
+        const matchesDept = filterDepartment === 'All' || v.department === filterDepartment;
+        const matchesYear = filterYear === 'All' || v.year === filterYear;
+        const matchesSearch = (v.name || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             (v.email || "").toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesDept && matchesYear && matchesSearch;
+    });
+
     const pendingCount  = voters.filter(v => !v.isVerified).length;
     const verifiedCount = voters.filter(v => v.isVerified).length;
+
 
     return (
         <div className="admin-shell">
@@ -60,21 +73,78 @@ const AdminVoters = () => {
                     </div>
                 </div>
 
+                {/* Search & Filter Bar */}
+                <div className="card" style={{ marginBottom: 24, padding: '16px 24px', borderRadius: 16 }}>
+                    <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1, minWidth: 280, position: 'relative' }}>
+                            <input 
+                                type="text" 
+                                placeholder="Search by name or email..." 
+                                className="form-input"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                style={{ paddingLeft: 40, borderRadius: 12 }}
+                            />
+                            <Users size={16} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: 12 }}>
+                            <select 
+                                className="form-input" 
+                                value={filterDepartment} 
+                                onChange={e => setFilterDepartment(e.target.value)}
+                                style={{ width: 180, borderRadius: 12 }}
+                            >
+                                <option value="All">All Departments</option>
+                                <option value="BCA">BCA</option>
+                                <option value="BBA">BBA</option>
+                                <option value="B.COM">B.COM</option>
+                                <option value="BAJMC">BAJMC</option>
+                            </select>
+
+                            <select 
+                                className="form-input" 
+                                value={filterYear} 
+                                onChange={e => setFilterYear(e.target.value)}
+                                style={{ width: 160, borderRadius: 12 }}
+                            >
+                                <option value="All">All Years</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                            </select>
+
+                            {(filterDepartment !== 'All' || filterYear !== 'All' || searchQuery !== '') && (
+                                <button 
+                                    className="btn btn-ghost" 
+                                    onClick={() => { setFilterDepartment('All'); setFilterYear('All'); setSearchQuery(''); }}
+                                    style={{ color: '#6366f1', fontWeight: 700 }}
+                                >
+                                    Reset
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
                 {/* Table */}
                 <div className="card">
                     <div className="card-header">
-                        <div className="card-title"><Users size={16} style={{ color: '#10b981' }} /> All Registered Voters</div>
+                        <div className="card-title">
+                            <Users size={16} style={{ color: '#10b981' }} /> 
+                            {filteredVoters.length} Voter{filteredVoters.length !== 1 ? 's' : ''} Found
+                        </div>
                     </div>
 
                     {loading ? (
                         <div className="card-body">
                             <div className="loading-text"><span className="spinner" /> Loading voters...</div>
                         </div>
-                    ) : voters.length === 0 ? (
+                    ) : filteredVoters.length === 0 ? (
                         <div className="empty-state">
                             <div className="empty-icon"><Users size={24} /></div>
-                            <div className="empty-title">No voters registered</div>
-                            <div className="empty-subtitle">Voters will appear here once they sign up.</div>
+                            <div className="empty-title">No voters match your filters</div>
+                            <div className="empty-subtitle">Try adjusting your search or category selection.</div>
                         </div>
                     ) : (
                         <table className="admin-table">
@@ -85,13 +155,13 @@ const AdminVoters = () => {
                                     <th>Email</th>
                                     <th>Department</th>
                                     <th>Year</th>
-                                    <th>Registered Election</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {voters.map((voter, idx) => (
+                                {filteredVoters.map((voter, idx) => (
+
                                     <tr key={voter._id}>
                                         <td style={{ color: '#94a3b8', fontWeight: 600 }}>{idx + 1}</td>
                                         <td>

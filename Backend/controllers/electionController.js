@@ -264,15 +264,66 @@ export const getElectionResults = async (req, res) => {
     try {
         const election = await Election.findById(req.params.id).populate(
             "candidates",
-            "name photo voteCount"
+            "name photo voteCount role targetYear targetDepartment"
         );
         if (!election) return res.status(404).json({ message: "Election not found" });
 
+        // overall sorted for backward compatibility
         const sorted = [...election.candidates].sort(
             (a, b) => b.voteCount - a.voteCount
         );
-
         const totalVotes = sorted.reduce((sum, c) => sum + c.voteCount, 0);
+
+        // Group by role
+        const roles = ["Secretary", "Joint Secretary", "Additional Joint Secretary", "CR"];
+        const resultsByRole = {};
+
+        roles.forEach(role => {
+            const roleCandidates = election.candidates.filter(c => c.role === role)
+                .sort((a, b) => b.voteCount - a.voteCount);
+            
+            if (roleCandidates.length > 0) {
+                if (role === "CR") {
+                    // Further group CR by class
+                    const crGroups = {};
+                    roleCandidates.forEach(c => {
+                        const classKey = `${c.targetYear} • ${c.targetDepartment}`;
+                        if (!crGroups[classKey]) crGroups[classKey] = [];
+                        crGroups[classKey].push(c);
+                    });
+
+                    // For each class, sort and calculate rank/percentage
+                    resultsByRole[role] = Object.entries(crGroups).map(([className, candidates]) => {
+                        const sortedCandidates = candidates.sort((a, b) => b.voteCount - a.voteCount);
+                        const classTotalVotes = sortedCandidates.reduce((sum, c) => sum + c.voteCount, 0);
+                        return {
+                            className,
+                            candidates: sortedCandidates.map((c, i) => ({
+                                rank: i + 1,
+                                _id: c._id,
+                                name: c.name,
+                                photo: c.photo,
+                                voteCount: c.voteCount,
+                                role: c.role,
+                                percentage: classTotalVotes > 0 ? ((c.voteCount / classTotalVotes) * 100).toFixed(1) : 0,
+                            }))
+                        };
+                    });
+                } else {
+                    const roleTotalVotes = roleCandidates.reduce((sum, c) => sum + c.voteCount, 0);
+                    resultsByRole[role] = roleCandidates.map((c, i) => ({
+                        rank: i + 1,
+                        _id: c._id,
+                        name: c.name,
+                        photo: c.photo,
+                        voteCount: c.voteCount,
+                        role: c.role,
+                        percentage: roleTotalVotes > 0 ? ((c.voteCount / roleTotalVotes) * 100).toFixed(1) : 0,
+                    }));
+                }
+            }
+        });
+
 
         res.json({
             election: {
@@ -285,16 +336,18 @@ export const getElectionResults = async (req, res) => {
                 rank: i + 1,
                 _id: c._id,
                 name: c.name,
-
                 photo: c.photo,
                 voteCount: c.voteCount,
+                role: c.role,
                 percentage: totalVotes > 0 ? ((c.voteCount / totalVotes) * 100).toFixed(1) : 0,
             })),
+            resultsByRole
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
+
 
 /** DELETE /api/elections/:id  (Admin only) */
 export const deleteElection = async (req, res) => {

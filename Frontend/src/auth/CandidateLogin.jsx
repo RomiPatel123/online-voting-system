@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaLock, FaUserTie } from "react-icons/fa";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { login } from "../api/authService";
 import { useAuth } from "../context/AuthContext";
@@ -57,35 +57,42 @@ const CandidateLogin = () => {
       <div className="auth-container">
         
         {/* Left Side */}
-        <div className="auth-banner" style={{ background: '#4c1d95' }}>
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 10px 10px, #fff 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+        <div className="auth-banner">
+          <img src="/study_hall_hero.png" alt="Candidate Access" />
           <div className="auth-banner-overlay">
-            <h2 className="auth-banner-title">Candidate Portal</h2>
+            <h2 className="auth-banner-title">Candidate High-Command</h2>
             <p className="auth-banner-text">
-              Manage your campaign, connect with voters, and view real-time statistics of your election performance securely.
+              Lucknow campus campaign management. Monitor your voter reach, manage your manifesto, and view real-time electoral intelligence securely.
             </p>
           </div>
         </div>
 
         {/* Right Side */}
         <div className="auth-form-side">
-          <div className="auth-icon-wrap">
-            <FaUserTie size={32} />
-          </div>
+          <button type="button" onClick={() => navigate(-1)} className="auth-back-btn">
+            <FiArrowLeft /> Back
+          </button>
 
-          <h1 className="auth-title">Candidate Login</h1>
-          <p className="auth-subtitle">Access your election dashboard</p>
+          <div className="auth-header-group">
+            <div className="auth-icon-wrap">
+              <FaUserTie size={32} />
+            </div>
+            <div className="auth-header-content">
+              <h1 className="auth-title">Candidate Login</h1>
+              <p className="auth-subtitle">Access your election dashboard</p>
+            </div>
+          </div>
 
           {error && <div className="auth-error">{error}</div>}
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
-              <label className="auth-label">Email Address</label>
+              <label className="auth-label">Official Email</label>
               <div className="auth-input-group">
                 <FaEnvelope className="auth-input-icon" />
                 <input
                   type="email"
-                  placeholder="candidate@party.com"
+                  placeholder="candidate@studyhall.edu"
                   className="auth-input"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -94,7 +101,7 @@ const CandidateLogin = () => {
             </div>
 
             <div className="auth-field">
-              <label className="auth-label">Password</label>
+              <label className="auth-label">Secure Access Key</label>
               <div className="auth-input-group">
                 <FaLock className="auth-input-icon" />
                 <input
@@ -116,18 +123,15 @@ const CandidateLogin = () => {
 
             <button type="submit" disabled={loading} className="auth-btn">
               {loading ? (
-                <><span className="auth-spinner" /> Authenticating…</>
+                <><span className="auth-spinner" /> Verifying Credentials…</>
               ) : (
-                "Access Dashboard"
+                "Enter Dashboard"
               )}
             </button>
-            <div style={{ textAlign: 'right', marginTop: '10px' }}>
-              <Link to="/forgot-password" style={{ color: '#6d28d9', fontSize: '13px', fontWeight: '500' }}>Forgot Password?</Link>
-            </div>
           </form>
 
           <p className="auth-link-text">
-            Not registered as a candidate? <Link to="/register" className="auth-link">Join the election</Link>
+            Not registered as a candidate? <Link to="/register" className="auth-link">Enroll as Candidate</Link>
           </p>
         </div>
       </div>
