@@ -91,7 +91,7 @@ const CandidateDashboard = () => {
         <div className="pt-8 border-t border-white/5">
           <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 mb-4">
             {user?.photo ? (
-              <img src={`http://localhost:5000${user.photo}`} alt="avatar" className="w-10 h-10 rounded-full object-cover border border-white/10" />
+              <img src={user.photo} alt="avatar" className="w-10 h-10 rounded-full object-cover border border-white/10" />
             ) : (
               <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold border border-blue-500/20">C</div>
             )}
@@ -255,7 +255,7 @@ const CandidateDashboard = () => {
                 <div className="relative mb-8">
                   <div className="absolute inset-0 bg-blue-500 blur-3xl opacity-20 scale-150 rounded-full animate-pulse" />
                   {user?.photo ? (
-                    <img src={`http://localhost:5000${user.photo}`} alt="hero" className="w-40 h-40 rounded-[2.5rem] object-cover relative z-10 border-4 border-white/5 shadow-2xl" />
+                    <img src={user.photo} alt="hero" className="w-40 h-40 rounded-[2.5rem] object-cover relative z-10 border-4 border-white/5 shadow-2xl" />
                   ) : (
                     <div className="w-40 h-40 rounded-[2.5rem] bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-5xl font-black text-slate-700 relative z-10 border-2 border-white/5 italic">C</div>
                   )}

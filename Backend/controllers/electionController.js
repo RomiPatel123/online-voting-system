@@ -383,7 +383,7 @@ export const addCandidate = async (req, res) => {
 
 
         const photo = req.files?.photo
-            ? `/uploads/${req.files.photo[0].filename}`
+            ? req.files.photo[0].path
             : "";
 
         const candidate = await Candidate.create({
@@ -549,7 +549,7 @@ export const updateCandidate = async (req, res) => {
 
 
         if (req.files?.photo) {
-            candidate.photo = `/uploads/${req.files.photo[0].filename}`;
+            candidate.photo = req.files.photo[0].path;
         }
 
         await candidate.save();

@@ -57,7 +57,7 @@ const AdminAddCandidate = () => {
                         targetDepartment: c.targetDepartment || 'All'
                     });
                     if (c.photo) {
-                        setPhotoPreview(`http://localhost:5000${c.photo}`);
+                        setPhotoPreview(c.photo);
                     }
                 }
             } catch (err) {

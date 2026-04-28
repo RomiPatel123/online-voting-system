@@ -47,10 +47,10 @@ export const registerUser = async (req, res) => {
     }
 
     const idCardFront = req.files?.idCardFront
-      ? `/uploads/${req.files.idCardFront[0].filename}`
+      ? req.files.idCardFront[0].path
       : "";
     const idCardBack = req.files?.idCardBack
-      ? `/uploads/${req.files.idCardBack[0].filename}`
+      ? req.files.idCardBack[0].path
       : "";
 
     const user = await User.create({

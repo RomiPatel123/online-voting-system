@@ -294,7 +294,7 @@ export default function ElectionPage() {
 
                           <div className="relative w-20 h-20 sm:w-full sm:h-64 sm:mb-8 rounded-2xl sm:rounded-[2rem] overflow-hidden bg-slate-100 shadow-inner flex-shrink-0">
                             {candidate.photo ? (
-                              <img src={`http://localhost:5000${candidate.photo}`} alt={candidate.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 saturate-[0.8] group-hover:saturate-[1.1]" />
+                              <img src={candidate.photo} alt={candidate.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 saturate-[0.8] group-hover:saturate-[1.1]" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-300">
                                 <FaUsers size={32} className="opacity-20 sm:w-14 sm:h-14" />

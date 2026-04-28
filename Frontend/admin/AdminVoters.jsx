@@ -252,14 +252,14 @@ const AdminVoters = () => {
                                 <div>
                                     <div className="id-card-slot-label">ID Card Front</div>
                                     {selectedVoter.idCardFront
-                                        ? <img src={`http://localhost:5000${selectedVoter.idCardFront}`} alt="ID Front" className="id-card-img" />
+                                        ? <img src={selectedVoter.idCardFront} alt="ID Front" className="id-card-img" />
                                         : <div className="id-card-placeholder">No image uploaded</div>
                                     }
                                 </div>
                                 <div>
                                     <div className="id-card-slot-label">ID Card Back</div>
                                     {selectedVoter.idCardBack
-                                        ? <img src={`http://localhost:5000${selectedVoter.idCardBack}`} alt="ID Back" className="id-card-img" />
+                                        ? <img src={selectedVoter.idCardBack} alt="ID Back" className="id-card-img" />
                                         : <div className="id-card-placeholder">No image uploaded</div>
                                     }
                                 </div>

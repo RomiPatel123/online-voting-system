@@ -246,7 +246,7 @@ const AdminElectionCandidates = () => {
                                         boxShadow: '0 8px 20px rgba(0,0,0,0.05)'
                                     }}>
                                         {c.photo ? (
-                                            <img src={`http://localhost:5000${c.photo}`} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <img src={c.photo} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         ) : (
                                             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
                                                 <Users size={32} />

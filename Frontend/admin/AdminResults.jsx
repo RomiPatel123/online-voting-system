@@ -241,7 +241,7 @@ const AdminResults = () => {
                                                                  <td>
                                                                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                                                          {c.photo
-                                                                             ? <img src={`http://localhost:5000${c.photo}`} style={{ width: 42, height: 42, borderRadius: '10px', objectFit: 'cover', border: '2px solid #f1f5f9' }} alt={c.name} />
+                                                                             ? <img src={c.photo} style={{ width: 42, height: 42, borderRadius: '10px', objectFit: 'cover', border: '2px solid #f1f5f9' }} alt={c.name} />
                                                                              : <div style={{
                                                                                  width: 42, height: 42, borderRadius: '10px',
                                                                                  background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
@@ -305,7 +305,7 @@ const AdminResults = () => {
                                                              <td>
                                                                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                                                      {c.photo
-                                                                         ? <img src={`http://localhost:5000${c.photo}`} style={{ width: 42, height: 42, borderRadius: '10px', objectFit: 'cover', border: '2px solid #f1f5f9' }} alt={c.name} />
+                                                                         ? <img src={c.photo} style={{ width: 42, height: 42, borderRadius: '10px', objectFit: 'cover', border: '2px solid #f1f5f9' }} alt={c.name} />
                                                                          : <div style={{
                                                                              width: 42, height: 42, borderRadius: '10px',
                                                                              background: 'linear-gradient(135deg, #e0e7ff, #c7d2fe)',
